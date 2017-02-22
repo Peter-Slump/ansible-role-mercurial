@@ -1,0 +1,19 @@
+---
+
+- name: Configure Nginx
+  template:
+    src: etc/nginx/sites-available/mercurial.j2
+    dest: /etc/nginx/sites-available/mercurial
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - Reload Nginx
+
+- name: Enable Mercurial site configuration
+  file:
+    src: /etc/nginx/sites-available/mercurial
+    dest: /etc/nginx/sites-enabled/01-{{ mercurial_hostname }}
+    state: link
+  notify:
+    - Reload Nginx

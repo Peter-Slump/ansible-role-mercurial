@@ -1,0 +1,4 @@
+---
+
+- name: Start Mercurial FCGI
+  command: /etc/init.d/mercurial-fcgi start

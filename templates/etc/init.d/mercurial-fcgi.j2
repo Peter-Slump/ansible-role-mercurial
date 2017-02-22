@@ -1,0 +1,77 @@
+#! /bin/sh
+#
+### BEGIN INIT INFO
+# Provides:          mercurial-fcgi
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     defaults
+# Default-Stop:      defaults
+# Short-Description: HG in FastCGI mode
+# Description:       Loading php-cgi using spawn-cgi
+### END INIT INFO
+#
+# fcgi-hg     Startup script for the nginx HTTP Server
+#
+# chkconfig: - 84 15
+# description: Loading php-cgi using spawn-cgi
+#          HTML files and CGI.
+#
+# Author:  Ryan Norbauer
+# Modified:     Geoffrey Grosenbach http://topfunky.com
+# Modified:     David Krmpotic http://davidhq.com
+# Modified: Kun Xi http://kunxi.org
+PATH=/opt/python/bin:$PATH
+DAEMON=/usr/bin/spawn-fcgi
+FCGIHOST=127.0.0.1
+FCGIPORT={{ mercurial_fcgi_port }}
+FCGIUSER={{ mercurial_user }}
+FCGIGROUP={{ mercurial_group }}
+FCGIAPP={{ mercurial_web_path }}/hgweb.fcgi
+FCGIDIR={{ mercurial_web_path }}
+PIDFILE=/var/run/mercurial-fcgi.pid
+DESC="HG in FastCGI mode"
+
+# Gracefully exit if the package has been removed.
+test -x $DAEMON || exit 0
+test -x $FCGIAPP || exit 0
+
+start() {
+    $DAEMON -a $FCGIHOST -p $FCGIPORT -u $FCGIUSER -g $FCGIGROUP \
+    -f $FCGIAPP -d $FCGIDIR -P $PIDFILE 2> /dev/null || return 1
+}
+
+stop() {
+    kill -QUIT `cat $PIDFILE` || echo -en "not running"
+}
+
+restart() {
+    kill -HUP `cat $PIDFILE` || echo -en "can't reload"
+}
+
+case "$1" in
+    start)
+        echo -n "Starting $DESC: "
+        start
+        ;;
+    stop)
+        echo -n "Stopping $DESC: "
+        stop
+        ;;
+    restart|reload)
+        echo -n "Restarting $DESC: "
+        stop
+        # One second might not be time enough for a daemon to stop,
+        # if this happens, d_start will fail (and dpkg will break if
+        # the package is being upgraded). Change the timeout if needed
+        # be, or change d_stop to have start-stop-daemon use --retry.
+        # Notice that using --retry slows down the shutdown process somewhat.
+        sleep 1
+        start
+        ;;
+    *)
+        echo "Usage: $SCRIPTNAME {start|stop|restart|reload}" >&2
+        exit 3
+        ;;
+esac
+
+exit $?

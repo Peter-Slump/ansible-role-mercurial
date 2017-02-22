@@ -1,0 +1,6 @@
+# This file is maintained by Ansible all changes will be overwritten.
+
+check process mercurial with pidfile /var/run/mercurial-fcgi.pid
+  start program = "/etc/init.d/mercurial-fcgi start"
+  stop program  = "/etc/init.d/mercurial-fcgi stop"
+  if 5 restarts within 5 cycles then unmonitor

@@ -1,0 +1,16 @@
+---
+
+mercurial_user: 'hg'
+mercurial_group: 'hg'
+mercurial_home: '/home/hg'
+
+mercurial_repository_path: "{{ mercurial_home }}/repos"
+mercurial_web_path: "{{ mercurial_home }}/web"
+
+mercurial_hostname: 'hg.example.com'
+mercurial_fcgi_port: 9003
+
+mercurial_use_letsencrypt: False
+mercurial_use_self_signed_ssl: False
+
+mercurial_salt: 'ThisIsNotVerySecure'

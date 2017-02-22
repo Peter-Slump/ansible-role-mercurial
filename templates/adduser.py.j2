@@ -1,0 +1,25 @@
+#!/usr/bin/env python
+
+# Add Mercurial user
+
+import crypt
+
+SALT = '{{ mercurial_salt }}'
+
+username = raw_input('username: ').strip()
+password = raw_input('password: ').strip()
+comment = raw_input('comment: ').strip()
+
+if not comment:
+    comment = '-'
+
+line = '{username}:{password}:{comment}\n'.format(
+    username=username,
+    password=crypt.crypt(password, SALT),
+    comment=comment
+)
+
+file_handle = open('hgusers.config', 'a')
+file_handle.write(line)
+
+print 'User saved'

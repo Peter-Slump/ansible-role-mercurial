@@ -1,0 +1,89 @@
+---
+
+- name: Install required packages
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+      - spawn-fcgi
+      - mercurial-common
+      - mercurial
+      - python-flup
+
+- name: Create Mercurial group
+  group:
+    name: "{{ mercurial_group }}"
+    system: yes
+    state: present
+
+- name: Create Mercurial user
+  user:
+    name: "{{ mercurial_user }}"
+    group: "{{ mercurial_group }}"
+    home: "{{ mercurial_home }}"
+    shell: /bin/sh
+    comment: "Mercurial"
+    system: yes
+    state: present
+
+- name: Create Mercurial repositories directory
+  file:
+    path: "{{ mercurial_repository_path }}"
+    state: directory
+    owner: "{{ mercurial_user }}"
+    group: "{{ mercurial_group }}"
+    mode: 0775
+
+- name: Create Mercurial web directory
+  file:
+    path: "{{ mercurial_web_path }}"
+    state: directory
+    owner: "{{ mercurial_user }}"
+    group: "{{ mercurial_group }}"
+    mode: 0755
+
+- name: Configure Mercurial
+  template:
+    src: hgweb.config.j2
+    dest: "{{ mercurial_web_path }}/hgweb.config"
+    owner: "{{ mercurial_user }}"
+    group: "{{ mercurial_group }}"
+    mode: 0640
+
+- name: Copy adduser script
+  template:
+    src: adduser.py.j2
+    dest: "{{ mercurial_web_path }}/adduser.py"
+    owner: "{{ mercurial_user }}"
+    group: "{{ mercurial_group }}"
+    mode: 0700
+
+- name: Link hgweb.wsgi to the web folder
+  file:
+    path: "{{ mercurial_web_path }}/hgweb.fcgi"
+    src: /usr/share/doc/mercurial-common/examples/hgweb.fcgi
+    state: link
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Set config location
+  lineinfile:
+    dest: "{{ mercurial_web_path }}/hgweb.fcgi"
+    regexp: '^config =  '
+    line: 'config =  "hgweb.config"'
+
+- name: Create init.d file
+  template:
+    src: etc/init.d/mercurial-fcgi.j2
+    dest: /etc/init.d/mercurial-fcgi
+    owner: root
+    group: root
+    mode: 0740
+  notify: Start Mercurial FCGI
+
+- name: Make it start on startup
+  command: update-rc.d mercurial-fcgi defaults
+
+- include: monit.yml
+- include: nginx.yml

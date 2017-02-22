@@ -1,0 +1,12 @@
+---
+
+dependencies:
+  - src: https://github.com/Peter-Slump/ansible-role-nginx.git
+    version: 0.0.1
+    scm: git
+    name: nginx
+
+  - role: nginx
+    nginx_ssl_hostname: '{{ mercurial_hostname }}'
+    nginx_use_letsencrypt: "{{ mercurial_use_letsencrypt }}"
+    nginx_use_self_signed_ssl: "{{ mercurial_use_self_signed_ssl }}"

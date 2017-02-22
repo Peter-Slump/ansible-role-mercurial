@@ -1,0 +1,19 @@
+---
+
+- name: Configure monitoring
+  template:
+    src: etc/monit/conf-available/mercurial.j2
+    dest: /etc/monit/conf-available/mercurial
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - Reload Monit
+
+- name: Enable Monit configuration
+  file:
+    src: "/etc/monit/conf-available/mercurial"
+    dest: /etc/monit/conf-enabled/mercurial
+    state: link
+  notify:
+    - Reload Monit
