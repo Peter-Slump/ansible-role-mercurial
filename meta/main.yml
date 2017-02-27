@@ -2,11 +2,11 @@
 
 dependencies:
   - src: https://github.com/Peter-Slump/ansible-role-nginx.git
-    version: 0.0.2
+    version: v0.0.3
     scm: git
     name: nginx
   - src: https://github.com/Peter-Slump/ansible-role-monit.git
-    version: 0.0.1
+    version: v0.0.1
     scm: git
     name: monit
 
