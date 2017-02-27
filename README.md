@@ -1,6 +1,6 @@
 # Ansible role Mercurial (HG)
 
-Version: 0.0.2
+Version: 0.0.3
 
 Supported OS: Ubuntu
 
